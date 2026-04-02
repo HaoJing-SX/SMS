@@ -6,6 +6,48 @@ This is the official implementation of "Boosting 3D Object Detection With Semant
 
 <img src="docs/Overall5.png" align="center" width="100%">
 
+## Dataset
+This paper uses standard 3D object detection data from the official KITTI Dataset and Waymo Open Dataset, following conventional file path configurations. Researchers can download these datasets and adjust the corresponding paths in OpenPCDet to reproduce the experiments described in this paper.
+
+## Training
+```
+cd tools/
+```
+Training the SMS-PointRCNN model on the KITTI dataset using a single GPU:
+```
+python train.py --cfg_file ./cfgs/kitti_models/pointrcnn_multiview.yaml
+```
+Training the SMS-PVRCNN model on the KITTI dataset using a single GPU:
+```
+python train.py --cfg_file ./cfgs/kitti_models/pv_rcnn_multiview.yaml
+```
+Training the SMS-PVRCNN++ model on the KITTI dataset using a single GPU:
+```
+python train.py --cfg_file ./cfgs/kitti_models/pvrcnn_plusplus_multiview.yaml
+```
+Training the SMS-PVRCNN model on the Waymo Open Dataset using 4 GPUs:
+```
+CUDA_VISIBLE=0,1,2,3 python -m torch.distributed.run --nproc_per_node=4 train.py --cfg_file ./cfgs/waymo_models/pv_rcnn_multiview.yaml
+```
+Training the SMS-PVRCNN++ model on the Waymo Open Dataset using 4 GPUs:
+```
+CUDA_VISIBLE=0,1,2,3 python -m torch.distributed.run --nproc_per_node=4 train.py --cfg_file ./cfgs/waymo_models/pvrcnn_plusplus_multiview.yaml
+```
+
+## Testing
+```
+cd tools/
+```
+Testing all checkpoints starting from checkpoint_65 for the SMS-PVRCNN model using a single GPU:
+```
+python test.py --cfg_file ./cfgs/kitti_models/pv_rcnn_multiview.yaml --ckpt ../output/cfgs/kitti_models/pv_rcnn_multiview/default/ckpt/checkpoint_epoch_65.pth --eval_all
+```
+
+Testing all checkpoints starting from checkpoint_65 for the SMS-PVRCNN model using 4 GPUs:
+```
+CUDA_VISIBLE=0,1,2,3 python -m torch.distributed.run --nproc_per_node=4 test.py --cfg_file ./cfgs/waymo_models/pv_rcnn_multiview.yaml --ckpt ../output/cfgs/kitti_models/pv_rcnn_multiview/default/ckpt/checkpoint_epoch_65.pth --eval_all
+```
+
 ## License
 
 `SMS` is released under the [Apache 2.0 license](LICENSE).
